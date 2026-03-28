@@ -85,11 +85,16 @@ export function isProviderConnected(providerName: string): boolean {
 
 // --- Auth ---
 function findAuthJsonPath(statePath: string): string | undefined {
+  const homeDir = os.homedir();
   const candidates = [
     join(statePath, "auth.json"),
-    join(dirname(statePath), "share", "opencode", "auth.json"),
+    join(dirname(dirname(statePath)), "share", "opencode", "auth.json"),
     join(statePath.replace("/state/", "/share/"), "auth.json"),
     join(statePath.replace("\\state\\", "\\share\\"), "auth.json"),
+    // 全局 auth.json 路径 (Linux/macOS: ~/.local/share/opencode/auth.json, Windows: %USERPROFILE%/.local/share/opencode/auth.json)
+    join(homeDir, ".local", "share", "opencode", "auth.json"),
+    // Windows 可能的全局路径
+    join(homeDir, ".config", "opencode", "auth.json"),
   ];
   return candidates.find(existsSync);
 }
